@@ -2,7 +2,11 @@ package com.captify.app;
 
 import ai.onnxruntime.*;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 
@@ -16,13 +20,13 @@ public class App
         // replace with concurrent-java-onnx-runtime/src/main/resources/models/model.onnx
         var session = env.createSession("/Users/nszysiak/IdeaProjects/concurrent-java-onnx-runtime/model.onnx");
 
-        String[] inputData = {"one direction edinburgh one direction edinburgh girlguiding edinburgh young adult books edinburgh",
-        "edinburgh hamster accessories hamster accessories edinburgh hamster accessories edinburgh hamster",
-        "accessories edinburgh"};
+        long[] inputData = {1, 2, 3};
+        long[] inputShape = {1, 3};
 
-        var inputTensor = OnnxTensor.createTensor(env, new StringBuffer(Arrays.toString(inputData)));
+        OnnxTensor inputTensor = OnnxTensor.createTensor(env, LongBuffer.wrap(inputData), inputShape);
 
-        var output = session.run(Map.of("data", inputTensor));
+        String inputName = session.getInputNames().stream().toList().get(0);
+        var output = session.run(Collections.singletonMap(inputName, inputTensor));
 
         var outputData = output.get(0);
 
